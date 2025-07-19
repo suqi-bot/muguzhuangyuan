@@ -5,17 +5,17 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>普洱蘑菇庄园民宿</title>
-    <script type="module" crossorigin src="/muguzhuangyuan/assets/index-DFO3eZqt.js"></script>
-    <link rel="stylesheet" crossorigin href="/muguzhuangyuan/assets/index-DJhCejAY.css">
+    <script type="module" crossorigin src="/muguzhuangyuan/assets/index-vYzfv9NW.js"></script>
+    <link rel="stylesheet" crossorigin href="/muguzhuangyuan/assets/index-dw17tApV.css">
   </head>
   <body>
     <div id="app"></div>
 
-    <!-- Dify聊天助手配置 -->
+    <!-- Dify聊天助手配置 - 使用代理路径避免CORS -->
     <script>
       window.difyChatbotConfig = {
         token: 'fggmGdSFt6MSQFJa',
-        baseUrl: 'http://4295a4ce.r28.cpolar.top'
+        baseUrl: '/api/dify'
       }
     </script>
 
@@ -84,12 +84,10 @@
       }
     </script>
 
-    <!-- 测试Dify服务连接并创建自定义按钮 -->
+    <!-- Dify服务连接 -->
     <script>
       // 测试Dify服务是否可用
       async function testDifyService() {
-        console.log('测试Dify服务连接...');
-
         const testEndpoints = [
           {
             name: 'Dify标准API',
@@ -123,7 +121,6 @@
 
         for (const endpoint of testEndpoints) {
           try {
-            console.log(`测试 ${endpoint.name}...`);
             const response = await fetch(endpoint.url, {
               method: endpoint.method,
               mode: 'cors',
@@ -131,21 +128,15 @@
               body: JSON.stringify(endpoint.body)
             });
 
-            console.log(`${endpoint.name} 响应状态:`, response.status);
-
             if (response.ok) {
               const data = await response.json();
-              console.log(`${endpoint.name} 测试成功:`, data);
               return true;
-            } else {
-              console.log(`${endpoint.name} 响应失败:`, response.status, response.statusText);
             }
           } catch (error) {
-            console.error(`${endpoint.name} 测试失败:`, error);
+            // 测试失败，继续下一个
           }
         }
 
-        console.log('所有Dify端点测试都失败');
         return false;
       }
 
@@ -469,18 +460,12 @@
         const message = input.value.trim();
         if (!message) return;
 
-        console.log('发送消息到Dify API:', message);
-
         // 添加用户消息到聊天窗口
         addMessageToChat(message, 'user');
 
         try {
-          console.log('开始API调用...');
-          console.log('用户消息:', message);
-
           // 首先尝试JSONP方式（如果支持）
           try {
-            console.log('尝试JSONP调用...');
             const jsonpResult = await tryJSONPCall(message);
             if (jsonpResult && (jsonpResult.answer || jsonpResult.message)) {
               const aiResponse = jsonpResult.answer || jsonpResult.message;
@@ -499,7 +484,7 @@
               return;
             }
           } catch (jsonpError) {
-            console.log('JSONP调用失败，尝试标准API:', jsonpError.message);
+            // JSONP调用失败，尝试标准API
           }
 
           // 只使用Dify API调用方式
@@ -539,7 +524,6 @@
 
           for (let i = 0; i < apiMethods.length; i++) {
             const method = apiMethods[i];
-            console.log(`尝试方法 ${i + 1}: ${method.name}`);
 
             try {
               console.log(`调用 ${method.name}:`, {
@@ -879,27 +863,21 @@
 
       // 页面加载完成后初始化
       window.addEventListener('load', async function() {
-        console.log('页面加载完成，初始化Dify AI助手...');
-
         // 初始化语音识别
         initSpeechRecognition();
 
         // 测试网络连通性
         const networkOk = await testNetworkConnectivity();
-        console.log('网络连通性:', networkOk ? '正常' : '异常');
 
         // 测试服务连接
         const serviceOk = await testDifyService();
-        console.log('Dify服务连接:', serviceOk ? '正常' : '异常');
 
         // 等待一下，看看是否有官方Dify按钮加载
         setTimeout(() => {
           const officialButton = document.getElementById('dify-chatbot-bubble-button');
           if (!officialButton) {
-            console.log('未找到官方Dify按钮，创建自定义按钮...');
             createCustomDifyButton();
           } else {
-            console.log('找到官方Dify按钮，进行自定义...');
             // 这里可以添加官方按钮的自定义逻辑
           }
         }, 3000);
